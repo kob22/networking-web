@@ -9,22 +9,14 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 class Common(Configuration):
 
     INSTALLED_APPS = (
-        'django.contrib.admin',
-        'django.contrib.auth',
         'django.contrib.contenttypes',
         'django.contrib.sessions',
         'django.contrib.messages',
         'django.contrib.staticfiles',
 
-
         # Third party apps
         'rest_framework',            # utilities for rest apis
-        'rest_framework.authtoken',  # token authentication
         'django_filters',            # for filtering rest endpoints
-
-        # Your apps
-        'networking.users',
-
     )
 
     # https://docs.djangoproject.com/en/2.0/topics/http/middleware/
@@ -33,7 +25,6 @@ class Common(Configuration):
         'django.contrib.sessions.middleware.SessionMiddleware',
         'django.middleware.common.CommonMiddleware',
         'django.middleware.csrf.CsrfViewMiddleware',
-        'django.contrib.auth.middleware.AuthenticationMiddleware',
         'django.contrib.messages.middleware.MessageMiddleware',
         'django.middleware.clickjacking.XFrameOptionsMiddleware',
     )
@@ -176,8 +167,6 @@ class Common(Configuration):
         }
     }
 
-    # Custom user app
-    AUTH_USER_MODEL = 'users.User'
 
     # Django Rest Framework
     REST_FRAMEWORK = {
@@ -188,11 +177,4 @@ class Common(Configuration):
             'rest_framework.renderers.JSONRenderer',
             'rest_framework.renderers.BrowsableAPIRenderer',
         ),
-        'DEFAULT_PERMISSION_CLASSES': [
-            'rest_framework.permissions.IsAuthenticated',
-        ],
-        'DEFAULT_AUTHENTICATION_CLASSES': (
-            'rest_framework.authentication.SessionAuthentication',
-            'rest_framework.authentication.TokenAuthentication',
-        )
     }
