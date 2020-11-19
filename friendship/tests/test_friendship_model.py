@@ -3,7 +3,8 @@ import datetime
 import mock
 import pytz
 from django.core.exceptions import ValidationError
-from django.test import TestCase
+from django.db import IntegrityError
+from django.test import TestCase, TransactionTestCase
 
 from friendship.models import Friendship
 
@@ -112,4 +113,29 @@ class FriendshipModelTest(TestCase):
         self.assertEqual(
             the_exception.messages,
             ["Friendship with this First friend and Second friend already exists."],
+        )
+
+
+class FriendManagerTest(TransactionTestCase):
+    def setUp(self) -> None:
+        for c in range(10, 20):
+            try:
+                Friendship.objects.create(first_friend=15, second_friend=c)
+            except IntegrityError:
+                pass
+        for c in range(5, 17, 2):
+            try:
+                Friendship.objects.create(first_friend=c, second_friend=10)
+            except IntegrityError:
+                pass
+
+    def test_no_friends_for_UID(self):
+        self.assertFalse(Friendship.objects.find_friends(1240))
+
+    def test_find_friends(self):
+        self.assertCountEqual(
+            [x for x in range(10, 20)], Friendship.objects.find_friends(15)
+        )
+        self.assertCountEqual(
+            [x for x in range(5, 17, 2)], Friendship.objects.find_friends(10)
         )

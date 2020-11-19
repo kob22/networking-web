@@ -3,6 +3,22 @@ from django.core.validators import MinValueValidator
 from django.db import models
 
 
+class FriendshipManager(models.Manager):
+    def find_friends(self, UID):
+        """
+        returns a list of UIDs who are friends of the user
+        to find friends, you have to search both columns,
+        this code will create SQL statement
+        SELECT second_friend where first_friend = UID
+        UNION
+        SELECT first_friend where second_fiend = UID
+        """
+        first = self.values_list("second_friend", flat=True).filter(first_friend=UID)
+        second = self.values_list("first_friend", flat=True).filter(second_friend=UID)
+        all_friends = first.union(second)
+        return all_friends
+
+
 class Friendship(models.Model):
     first_friend = models.PositiveBigIntegerField(
         blank=False,
@@ -25,6 +41,8 @@ class Friendship(models.Model):
         error_messages={"invalid": "Ensure UID is any non-negative integer number"},
     )
     created_at = models.DateTimeField(auto_now_add=True)
+
+    objects = FriendshipManager()
 
     class Meta:
         constraints = [
