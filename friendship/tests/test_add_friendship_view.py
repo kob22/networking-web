@@ -1,11 +1,8 @@
-import datetime
 import json
-from unittest import mock
 
 from django.test import TestCase, TransactionTestCase
 from django.urls import reverse
 from rest_framework import status
-from rest_framework.renderers import JSONRenderer
 from rest_framework.test import APIRequestFactory
 
 from friendship.models import Friendship

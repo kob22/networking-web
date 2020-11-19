@@ -12,6 +12,12 @@ class FriendshipSerializer(serializers.ModelSerializer):
                 },
                 code="invalid",
             )
+        # validate friendship, first friend ID  is always smaller than second ID, if not swap them
+        if data["first_friend"] > data["second_friend"]:
+            data["first_friend"], data["second_friend"] = (
+                data["second_friend"],
+                data["first_friend"],
+            )
         return data
 
     class Meta:

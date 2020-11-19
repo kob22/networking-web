@@ -3,6 +3,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
+from .models import Friendship
 from .serializers import FriendshipSerializer
 
 
@@ -13,11 +14,14 @@ def add_friendship(request):
     """
     if request.method == "POST":
         serializer = FriendshipSerializer(data=request.data)
+
         if serializer.is_valid():
+
             # try to save relation
             try:
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
+
             except IntegrityError as cm_error:
                 """
                 Check if friendship already exists, if exists, django will return integrity error,
@@ -27,5 +31,43 @@ def add_friendship(request):
                 """
                 if "Unique Friendship" in str(cm_error):
                     return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["POST"])
+def remove_friendship(request):
+    """
+    remove friendship relation
+    """
+
+    if request.method == "POST":
+        serializer = FriendshipSerializer(data=request.data)
+
+        # check if data (UIDs) are valid
+        if serializer.is_valid():
+
+            # find object in DB
+            try:
+                friendship = Friendship.objects.get(
+                    first_friend=serializer.data["first_friend"],
+                    second_friend=serializer.data["second_friend"],
+                )
+
+            except Friendship.DoesNotExist:
+                # if object not exists, return OK, do nothing
+                return Response(status=status.HTTP_200_OK)
+
+            except Friendship.MultipleObjectsReturned:
+                # if multiple objects exist, remove all (not should happened)
+                Friendship.objects.filter(
+                    first_friend=serializer.data["first_friend"],
+                    second_friend=serializer.data["second_friend"],
+                ).delete()
+
+                return Response(status=status.HTTP_204_NO_CONTENT)
+
+            friendship.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
