@@ -15,6 +15,7 @@ class Common(Configuration):
         "django.contrib.sessions",
         "django.contrib.messages",
         "django.contrib.staticfiles",
+        "django.contrib.auth",
         # Third party apps
         "rest_framework",  # utilities for rest apis
         "django_filters",  # for filtering rest endpoints
@@ -172,4 +173,7 @@ class Common(Configuration):
             "rest_framework.renderers.JSONRenderer",
             "rest_framework.renderers.BrowsableAPIRenderer",
         ),
+        "DEFAULT_PARSER_CLASSES": [
+            "rest_framework.parsers.JSONParser",
+        ],
     }

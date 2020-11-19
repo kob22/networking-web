@@ -20,12 +20,14 @@ class FriendshipSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             "first_friend": {
                 "error_messages": {
-                    "invalid": "Ensure UID is any non-negative integer number"
+                    "invalid": "Ensure UID is any non-negative integer number",
+                    "min_value": "Ensure UID is any non-negative integer number",
                 }
             },
             "second_friend": {
                 "error_messages": {
-                    "invalid": "Ensure UID is any non-negative integer number"
+                    "invalid": "Ensure UID is any non-negative integer number",
+                    "min_value": "Ensure UID is any non-negative integer number",
                 }
             },
         }
