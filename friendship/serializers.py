@@ -3,6 +3,16 @@ from rest_framework import serializers
 from . import models
 
 
+class UserSerializer(serializers.Serializer):
+    uid = serializers.IntegerField(
+        min_value=1,
+        error_messages={
+            "invalid": "Ensure UID is any non-negative integer number",
+            "min_value": "Ensure UID is any non-negative integer number",
+        },
+    )
+
+
 class FriendshipSerializer(serializers.ModelSerializer):
     def validate(self, data):
         if data["first_friend"] == data["second_friend"]:
