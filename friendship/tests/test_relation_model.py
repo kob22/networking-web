@@ -38,10 +38,10 @@ class FriendshipModelTest(TestCase):
             )
 
     def test_should_not_create_friendship_with_first_wrong_id(self):
-        parameters = ["a", "%", "\sdf"]
+        parameters = ["a", "%", "/sdf"]
         for parameter in parameters:
             friendship = Friendship(first_friend=parameter, second_friend=5)
-            with self.assertRaises(ValidationError) as error:
+            with self.assertRaises(ValidationError):
                 friendship.full_clean()
 
     def test_should_not_create_friendship_with_second_wrong_integer_id(self):
@@ -58,10 +58,10 @@ class FriendshipModelTest(TestCase):
             )
 
     def test_should_not_create_friendship_with_second_wrong_id(self):
-        parameters = ["a", "%", "\sdf"]
+        parameters = ["a", "%", "/sdf"]
         for parameter in parameters:
             friendship = Friendship(first_friend=2, second_friend=parameter)
-            with self.assertRaises(ValidationError) as error:
+            with self.assertRaises(ValidationError):
                 friendship.full_clean()
 
     def test_should_not_create_friendship_with_the_same_ids(self):
@@ -106,6 +106,7 @@ class FriendshipModelTest(TestCase):
         same_friendship = Friendship(first_friend=23325152, second_friend=67851)
         with self.assertRaises(ValidationError) as error:
             same_friendship.full_clean()
+            same_friendship.save()
 
         the_exception = error.exception
         self.assertEqual(
