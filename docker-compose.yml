@@ -3,7 +3,6 @@ version: '2'
 services:
   postgres:
     image: postgres:11.6
-    command: ["postgres", "-c", "log_statement=all"]
     ports:
       - "5432:5432"
   web:

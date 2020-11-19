@@ -34,4 +34,4 @@ coverage==5.3
 # Static and Media Storage
 django-storages==1.10.1
 boto3==1.16.18
-
+drf-yasg[validation]

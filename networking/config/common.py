@@ -20,6 +20,7 @@ class Common(Configuration):
         "rest_framework",  # utilities for rest apis
         "django_filters",  # for filtering rest endpoints
         "friendship",
+        "drf_yasg",
     )
 
     # https://docs.djangoproject.com/en/2.0/topics/http/middleware/

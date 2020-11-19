@@ -29,20 +29,7 @@ Run a command inside the docker container:
 ```bash
 docker-compose run --rm web [command]
 ```
-# Documentation
 
-Swagger:
-```bash
-http://0.0.0.0:8000/
-```
-MKDOCS:
-```bash
-http://0.0.0.0:8001/
-```
-API:
-```bash
-http://0.0.0.0:8000/api/
-```
 ## Add a new friend
 
 **Request**:
