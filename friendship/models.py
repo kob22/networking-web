@@ -12,6 +12,7 @@ class Friendship(models.Model):
                 1, message="Ensure UID is any non-negative integer number"
             )
         ],
+        error_messages={"invalid": "Ensure UID is any non-negative integer number"},
     )
     second_friend = models.PositiveBigIntegerField(
         blank=False,
@@ -21,6 +22,7 @@ class Friendship(models.Model):
                 1, message="Ensure UID is any non-negative integer number"
             )
         ],
+        error_messages={"invalid": "Ensure UID is any non-negative integer number"},
     )
     created_at = models.DateTimeField(auto_now_add=True)
 
