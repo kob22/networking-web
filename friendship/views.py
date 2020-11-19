@@ -71,3 +71,16 @@ def remove_friendship(request):
             return Response(status=status.HTTP_204_NO_CONTENT)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["GET"])
+def find_friends(request, uid):
+
+    error_wrong_UID = {"invalid": "Ensure UID is any non-negative integer number"}
+
+    if not isinstance(uid, int) or uid < 1:
+        return Response(error_wrong_UID, status=status.HTTP_400_BAD_REQUEST)
+
+    friends = Friendship.objects.find_friends(uid)
+
+    return Response(list(friends), status=status.HTTP_200_OK)
