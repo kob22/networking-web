@@ -47,7 +47,7 @@ http://0.0.0.0:8000/api/
 
 **Request**:
 
-`POST` `/api/add_friendship/`
+`POST` `/api/friendship`
 
 Parameters:
 
@@ -57,7 +57,7 @@ first_friend   | int > 0 | Yes      | first UID
 second_friend   | int > 0 | Yes      | second UID
 **Example**:
 
-`POST` `http://0.0.0.0:8000/api/add_friendship/`
+`POST` `http://0.0.0.0:8000/api/friendship`
 ```json
 {
     "first_friend": 55,
@@ -77,27 +77,21 @@ Content-Type application/json
 }
 ```
 
-## Remove a new friend
+## Remove a friend
 
 **Request**:
 
-`POST` `/api/remove_friendship/`
+`DELETE` `/api/friendship/:UID1/:UID2`
 
 Parameters:
 
 Name       | Type   | Required | Description
 -----------|--------|----------|------------
-first_friend   | int > 0 | Yes      | first UID
-second_friend   | int > 0 | Yes      | second UID
+UID1   | int > 0 | Yes      | first UID
+UID2  | int > 0 | Yes      | second UID
 **Example**:
 
-`POST` `http://0.0.0.0:8000/api/remove_friendship/`
-```json
-{
-    "first_friend": 55,
-    "second_friend": 322
-}
-```
+`DELETE` `http://0.0.0.0:8000/api/friendship/322/55`
 
 **Response**:
 
@@ -111,7 +105,7 @@ Content-Type application/json
 
 **Request**:
 
-`GET` `/api/find_friends/:UID/`
+`GET` `/api/friendship/:UID`
 
 Parameters:
 
@@ -121,16 +115,18 @@ UID   | int > 0| Yes      | UID
 
 **Example**:
 
-`GET` `http://127.0.0.1:8000/api/find_friends/55/`
+`GET` `http://0.0.0.0:8000/api/friendship/55`
 
 **Response**:
 
 ```json
 Content-Type application/json
 200 OK
-[
-    19,
-    252,
-    2
-]
+{
+    "friends": [
+        322,
+        3221,
+        12
+    ]
+}
 ```
