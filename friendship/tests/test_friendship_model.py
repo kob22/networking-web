@@ -15,7 +15,6 @@ class FriendshipModelTest(TestCase):
         with mock.patch(
             "django.utils.timezone.now", mock.Mock(return_value=date_to_mock)
         ):
-
             friendship = Friendship(first_friend=1, second_friend=5)
             friendship.full_clean()
             friendship.save()

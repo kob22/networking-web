@@ -6,19 +6,20 @@ from rest_framework import status
 from rest_framework.test import APIRequestFactory
 
 from friendship.models import Friendship
-from friendship.views import add_friendship
+from friendship.views import FriendshipCreateView
 
 
 class AddFriendTest(TestCase):
     def test_add_friendship(self):
         friendship_data = {"first_friend": 6785, "second_friend": 2332515}
         factory = APIRequestFactory()
+        friendship_view = FriendshipCreateView.as_view()
         request = factory.post(
-            reverse("friendship:add_friendship"),
+            reverse("friendship:friendship_create"),
             json.dumps(friendship_data),
             content_type="application/json",
         )
-        response = add_friendship(request)
+        response = friendship_view(request)
         response.render()
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -36,13 +37,15 @@ class AddFriendTest(TestCase):
     def test_add_friendship_with_invalid_UID(self):
         friendship_data = {"first_friend": "A", "second_friend": "Fasfa"}
         factory = APIRequestFactory()
+        friendship_view = FriendshipCreateView.as_view()
         request = factory.post(
-            reverse("friendship:add_friendship"),
+            reverse("friendship:friendship_create"),
             json.dumps(friendship_data),
             content_type="application/json",
         )
-        response = add_friendship(request)
+        response = friendship_view(request)
         response.render()
+
         should_response = {
             "first_friend": ["Ensure UID is any non-negative integer number"],
             "second_friend": ["Ensure UID is any non-negative integer number"],
@@ -55,13 +58,15 @@ class AddFriendTest(TestCase):
     def test_add_friendship_with_negative_UID(self):
         friendship_data = {"first_friend": -23, "second_friend": -12}
         factory = APIRequestFactory()
+        friendship_view = FriendshipCreateView.as_view()
         request = factory.post(
-            reverse("friendship:add_friendship"),
+            reverse("friendship:friendship_create"),
             json.dumps(friendship_data),
             content_type="application/json",
         )
-        response = add_friendship(request)
+        response = friendship_view(request)
         response.render()
+
         should_response = {
             "first_friend": ["Ensure UID is any non-negative integer number"],
             "second_friend": ["Ensure UID is any non-negative integer number"],
@@ -74,12 +79,13 @@ class AddFriendTest(TestCase):
     def test_add_friendship_without_whole_data(self):
         friendship_data = {"first_frienad": 6785, "second_frienda": 2332515}
         factory = APIRequestFactory()
+        friendship_view = FriendshipCreateView.as_view()
         request = factory.post(
-            reverse("friendship:add_friendship"),
+            reverse("friendship:friendship_create"),
             json.dumps(friendship_data),
             content_type="application/json",
         )
-        response = add_friendship(request)
+        response = friendship_view(request)
         response.render()
 
         should_response = {
@@ -98,13 +104,15 @@ class AddFriendTest(TestCase):
             "third_friend": 12421,
         }
         factory = APIRequestFactory()
+        friendship_view = FriendshipCreateView.as_view()
         request = factory.post(
-            reverse("friendship:add_friendship"),
+            reverse("friendship:friendship_create"),
             json.dumps(friendship_data),
             content_type="application/json",
         )
-        response = add_friendship(request)
+        response = friendship_view(request)
         response.render()
+
         friendship_data.pop("third_friend", None)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(json.loads(response.content), friendship_data)
@@ -124,12 +132,13 @@ class AddFriendTest(TestCase):
             {"first_friend": 67285, "second_friend": 23325115},
         ]
         factory = APIRequestFactory()
+        friendship_view = FriendshipCreateView.as_view()
         request = factory.post(
-            reverse("friendship:add_friendship"),
+            reverse("friendship:friendship_create"),
             json.dumps(friendship_data),
             content_type="application/json",
         )
-        response = add_friendship(request)
+        response = friendship_view(request)
         response.render()
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -151,12 +160,13 @@ class AddFriendIfExistsTest(TransactionTestCase):
         friendship = Friendship.objects.create(**friendship_data)
 
         factory = APIRequestFactory()
+        friendship_view = FriendshipCreateView.as_view()
         request = factory.post(
-            reverse("friendship:add_friendship"),
+            reverse("friendship:friendship_create"),
             json.dumps(friendship_data),
             content_type="application/json",
         )
-        response = add_friendship(request)
+        response = friendship_view(request)
         response.render()
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -177,12 +187,13 @@ class AddFriendIfExistsTest(TransactionTestCase):
         friendship = Friendship.objects.create(**friendship_data)
 
         factory = APIRequestFactory()
+        friendship_view = FriendshipCreateView.as_view()
         request = factory.post(
-            reverse("friendship:add_friendship"),
-            json.dumps(friendship_data),
+            reverse("friendship:friendship_create"),
+            json.dumps(friendship_data_swap),
             content_type="application/json",
         )
-        response = add_friendship(request)
+        response = friendship_view(request)
         response.render()
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)

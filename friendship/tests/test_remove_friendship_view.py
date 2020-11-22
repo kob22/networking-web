@@ -2,29 +2,40 @@ import json
 from unittest import mock
 
 from django.core.exceptions import ObjectDoesNotExist
-from django.test import TestCase, TransactionTestCase
+from django.test import TestCase
 from django.urls import reverse
+from django.urls.exceptions import NoReverseMatch
 from rest_framework import status
 from rest_framework.test import APIRequestFactory
 
 from friendship.models import Friendship
-from friendship.views import remove_friendship
+from friendship.views import FriendshipDeleteView
 
 
 class RemoveFriendTest(TestCase):
     def setUp(self) -> None:
         self.friendship_data = {"first_friend": 126785, "second_friend": 3252332515}
+
         self.friendship = Friendship.objects.create(**self.friendship_data)
 
     def test_remove_friendship(self):
-
         factory = APIRequestFactory()
-        request = factory.post(
-            reverse("friendship:remove_friendship"),
-            json.dumps(self.friendship_data),
+        friendship_view = FriendshipDeleteView.as_view()
+        request = factory.delete(
+            reverse(
+                "friendship:friendship_delete",
+                args=(
+                    self.friendship_data["first_friend"],
+                    self.friendship_data["second_friend"],
+                ),
+            ),
             content_type="application/json",
         )
-        response = remove_friendship(request)
+        response = friendship_view(
+            request,
+            uid1=self.friendship_data["first_friend"],
+            uid2=self.friendship_data["second_friend"],
+        )
         response.render()
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
@@ -41,12 +52,22 @@ class RemoveFriendTest(TestCase):
             "second_friend": self.friendship_data["first_friend"],
         }
         factory = APIRequestFactory()
-        request = factory.post(
-            reverse("friendship:remove_friendship"),
-            json.dumps(friendship_data_swapped),
+        friendship_view = FriendshipDeleteView.as_view()
+        request = factory.delete(
+            reverse(
+                "friendship:friendship_delete",
+                args=(
+                    self.friendship_data["first_friend"],
+                    self.friendship_data["second_friend"],
+                ),
+            ),
             content_type="application/json",
         )
-        response = remove_friendship(request)
+        response = friendship_view(
+            request,
+            uid1=self.friendship_data["first_friend"],
+            uid2=self.friendship_data["second_friend"],
+        )
         response.render()
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
@@ -60,12 +81,22 @@ class RemoveFriendTest(TestCase):
     def test_remove_non_existent_friendship(self):
         friendship_data = {"first_friend": 126785, "second_friend": 32523325151}
         factory = APIRequestFactory()
-        request = factory.post(
-            reverse("friendship:remove_friendship"),
-            json.dumps(friendship_data),
+        friendship_view = FriendshipDeleteView.as_view()
+        request = factory.delete(
+            reverse(
+                "friendship:friendship_delete",
+                args=(
+                    friendship_data["first_friend"],
+                    friendship_data["second_friend"],
+                ),
+            ),
             content_type="application/json",
         )
-        response = remove_friendship(request)
+        response = friendship_view(
+            request,
+            uid1=friendship_data["first_friend"],
+            uid2=friendship_data["second_friend"],
+        )
         response.render()
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -79,14 +110,37 @@ class RemoveFriendTest(TestCase):
     # testing only one variant validation, to check if validation working
     def test_remove_friendship_with_negative_UIDs(self):
         friendship_data = {"first_friend": -23, "second_friend": -12}
+
         factory = APIRequestFactory()
-        request = factory.post(
-            reverse("friendship:add_friendship"),
-            json.dumps(friendship_data),
+        friendship_view = FriendshipDeleteView.as_view()
+        with self.assertRaises(NoReverseMatch):
+            request = factory.delete(
+                reverse(
+                    "friendship:friendship_delete",
+                    args=(
+                        friendship_data["first_friend"],
+                        friendship_data["second_friend"],
+                    ),
+                ),
+                content_type="application/json",
+            )
+
+    def test_remove_friendship_with_negative_UIDs_hard_code(self):
+        friendship_data = {"first_friend": -23, "second_friend": -12}
+
+        factory = APIRequestFactory()
+        friendship_view = FriendshipDeleteView.as_view()
+        request = factory.delete(
+            "api/friendship/-12532/-23523",
             content_type="application/json",
         )
-        response = remove_friendship(request)
+        response = friendship_view(
+            request,
+            uid1=friendship_data["first_friend"],
+            uid2=friendship_data["second_friend"],
+        )
         response.render()
+
         should_response = {
             "first_friend": ["Ensure UID is any non-negative integer number"],
             "second_friend": ["Ensure UID is any non-negative integer number"],
@@ -104,12 +158,22 @@ class RemoveFriendTest(TestCase):
 
         friendship_data = {"first_friend": 126785, "second_friend": 32523325151}
         factory = APIRequestFactory()
-        request = factory.post(
-            reverse("friendship:remove_friendship"),
-            json.dumps(friendship_data),
+        friendship_view = FriendshipDeleteView.as_view()
+        request = factory.delete(
+            reverse(
+                "friendship:friendship_delete",
+                args=(
+                    friendship_data["first_friend"],
+                    friendship_data["second_friend"],
+                ),
+            ),
             content_type="application/json",
         )
-        response = remove_friendship(request)
+        response = friendship_view(
+            request,
+            uid1=friendship_data["first_friend"],
+            uid2=friendship_data["second_friend"],
+        )
         response.render()
 
         self.assertTrue(mock_friendships.filter.return_value.delete.called)
